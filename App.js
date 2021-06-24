@@ -8,7 +8,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <AuthProvider>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
         <Routes />
       </AuthProvider>
     </NavigationContainer>

@@ -12,17 +12,6 @@ function Login() {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          console.log("ALTERAR USUÁRIO");
-          changeUser(null);
-        }}
-      >
-        <Text style={styles.buttonText}>NULO</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          console.log("ALTERAR USUÁRIO");
           changeUser({
             name: "Marco Antônio",
             username: "marcoant08",
@@ -30,6 +19,18 @@ function Login() {
         }}
       >
         <Text style={styles.buttonText}>Marco Antônio</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          changeUser({
+            name: "Neymar Jr",
+            username: "neyjr",
+          });
+        }}
+      >
+        <Text style={styles.buttonText}>Neymar Jr</Text>
       </TouchableOpacity>
     </View>
   );

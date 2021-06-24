@@ -1,12 +1,27 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import styles from "./styles";
+import AppHeader from "../../components/AppHeader";
 
 function Home() {
+  const navigation = useNavigation();
+  
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home Page</Text>
-    </View>
+    <>
+      <AppHeader />
+      <View style={styles.container}>
+        <Text style={styles.text}>Home Page</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.push("Verify");
+          }}
+        >
+          <Text style={styles.buttonText}>Verificação</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 
