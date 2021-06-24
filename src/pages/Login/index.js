@@ -15,6 +15,7 @@ function Login() {
           changeUser({
             name: "Marco Antônio",
             username: "marcoant08",
+            id: 102,
           });
         }}
       >
@@ -27,6 +28,7 @@ function Login() {
           changeUser({
             name: "Neymar Jr",
             username: "neyjr",
+            id: 103,
           });
         }}
       >

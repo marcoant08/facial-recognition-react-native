@@ -3,6 +3,7 @@ import "firebase/database";
 import "firebase/firestore";
 import "firebase/auth";
 import "firebase/storage";
+
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -22,6 +23,8 @@ const firebaseConfig = {
   appId: APP_ID,
   measurementId: MEASUREMENT_ID,
 };
+
+console.log("FirebaseConfig:\n", firebaseConfig);
 
 // Initialize Firebase
 if (!firebase.apps.length) {
