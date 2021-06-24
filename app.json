@@ -1,0 +1,12 @@
+{
+  "name": "mobile-tcc",
+  "displayName": "mobile-tcc",
+  "expo": {
+    "name": "mobile-tcc",
+    "slug": "mobile-tcc",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
