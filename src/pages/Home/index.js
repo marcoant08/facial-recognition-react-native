@@ -6,7 +6,7 @@ import AppHeader from "../../components/AppHeader";
 
 function Home() {
   const navigation = useNavigation();
-  
+
   return (
     <>
       <AppHeader />
@@ -19,6 +19,15 @@ function Home() {
           }}
         >
           <Text style={styles.buttonText}>Verificação</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.push("MyPhotos");
+          }}
+        >
+          <Text style={styles.buttonText}>Minhas Fotos</Text>
         </TouchableOpacity>
       </View>
     </>

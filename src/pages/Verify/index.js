@@ -56,7 +56,7 @@ function Verify() {
       const fileExtension = photo.uri.split(".").pop();
       console.log("EXT: " + fileExtension);
 
-      let uuid = uuidv4();
+      const uuid = uuidv4();
 
       const fileName = `${uuid}.${fileExtension}`;
       console.log("FILENAME: " + fileName);
@@ -84,8 +84,9 @@ function Verify() {
           Alert.alert("Ocorreu um erro...", error.message);
         },
         async () => {
-          await storageRef.getDownloadURL().then((downloadUrl) => {
+          await storageRef.getDownloadURL().then(async (downloadUrl) => {
             console.log("downloadUrl: " + downloadUrl);
+            await salvarDados(downloadUrl)
           });
 
           Alert.alert("Sucesso!", "Foto enviada.");
@@ -96,13 +97,47 @@ function Verify() {
     }
   };
 
+  const salvarDados = async (downloadUrl) => {
+    await firebase
+      .firestore()
+      .collection("faceList")
+      .doc(user.username)
+      .update({
+        facelist: firebase.firestore.FieldValue.arrayUnion(downloadUrl)
+      })
+      .then((value) => {
+        console.log(value)
+        Alert.alert("Sucesso", "Salvo!")
+      })
+      .catch((err) => {
+        Alert.alert("Erro", err.message)
+      });
+  }
+
+  const firestore = async () => {
+    await firebase
+      .firestore()
+      .collection("faceList")
+      .doc(user.username)
+      .update({
+        facelist: firebase.firestore.FieldValue.arrayUnion("downloadUrl")
+      })
+      .then((value) => {
+        console.log(value)
+        Alert.alert("Sucesso", "Salvo!")
+      })
+      .catch((err) => {
+        Alert.alert("Erro", err.message)
+      });
+  }
+
   return (
     <>
       <AppHeader back />
       <View style={styles.container}>
         <Text style={styles.text}>Verify Page</Text>
 
-        <Text style={styles.text}>{photo ? photo.uri : "no photo"}</Text>
+        <Text style={styles.text}>{photo ? photo.uri.substr(-40) : "no photo"}</Text>
 
         <Image
           style={styles.photo}
@@ -119,6 +154,10 @@ function Verify() {
 
         <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
           <Text style={styles.buttonText}>Enviar Foto</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={firestore}>
+          <Text style={styles.buttonText}>Teste Firestore</Text>
         </TouchableOpacity>
 
         <Text style={styles.text}>{transferred}%</Text>
