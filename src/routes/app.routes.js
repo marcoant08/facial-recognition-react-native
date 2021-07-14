@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Verify from "../pages/Verify";
 import MyPhotos from "../pages/MyPhotos";
 import AddPhoto from "../pages/AddPhoto";
+import PhotoDetails from "../pages/PhotoDetails";
 
 const AppStack = createStackNavigator();
 
@@ -14,6 +15,7 @@ function AppRoutes() {
       <AppStack.Screen name="Verify" component={Verify} />
       <AppStack.Screen name="MyPhotos" component={MyPhotos} />
       <AppStack.Screen name="AddPhoto" component={AddPhoto} />
+      <AppStack.Screen name="PhotoDetails" component={PhotoDetails} />
     </AppStack.Navigator>
   );
 }
