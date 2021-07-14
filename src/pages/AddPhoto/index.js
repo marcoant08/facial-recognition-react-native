@@ -34,35 +34,39 @@ function AddPhoto() {
       //trocar por .on ou .get
       console.log(snapshot.data());
       setFaceListExists(snapshot.data() ? true : false);
-      setFaceListLength(snapshot.data().facelist.length);
+      setFaceListLength(snapshot.data() ? snapshot.data().facelist.length : 0);
     });
   }, []);
 
   const openCamera = async () => {
     console.log("Abrindo câmera...");
 
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (faceListLength >= 6) {
+      Alert.alert("Ops...", "Você excedeu o limite de fotos.");
+    } else {
+      if (Constants.platform.ios) {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
-      if (status !== "granted") {
-        Alert.alert(
-          "Permissão",
-          "Esta permissão é necessária para abrir a câmera."
-        );
+        if (status !== "granted") {
+          Alert.alert(
+            "Permissão",
+            "Esta permissão é necessária para abrir a câmera."
+          );
 
-        return;
+          return;
+        }
       }
+
+      const data = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      });
+
+      console.log(data);
+
+      if (data.cancelled || !data.uri) return;
+
+      setPhoto(data);
     }
-
-    const data = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    });
-
-    console.log(data);
-
-    if (data.cancelled || !data.uri) return;
-
-    setPhoto(data);
   };
 
   const uploadPhoto = async () => {
@@ -118,7 +122,7 @@ function AddPhoto() {
             });
           });
 
-          Alert.alert("Sucesso!", "Foto enviada.");
+          console.log("Sucesso!", "Foto enviada.");
 
           setPhoto(null);
         }
@@ -134,7 +138,7 @@ function AddPhoto() {
         })
         .then((value) => {
           console.log(value);
-          Alert.alert("Sucesso", "Salvo!");
+          console.log("Sucesso ao salvar no firestore");
         })
         .catch((err) => {
           Alert.alert("Erro", err.message);
@@ -146,7 +150,7 @@ function AddPhoto() {
         })
         .then((value) => {
           console.log(value);
-          Alert.alert("Sucesso", "Salvo!");
+          console.log("Sucesso ao salvar no firestore");
         })
         .catch((err) => {
           Alert.alert("Erro", err.message);
@@ -155,7 +159,7 @@ function AddPhoto() {
 
     setTimeout(() => {
       setSending(false);
-    }, 2000);
+    }, 3000);
   };
 
   return (

@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
 
   loaderContent: {
     borderRadius: 8,
-    backgroundColor: "#f00",
     height: "100%",
   },
 });

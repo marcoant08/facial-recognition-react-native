@@ -1,5 +1,12 @@
-import React, { useContext, useState } from "react";
-import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
@@ -8,11 +15,26 @@ import styles from "./styles";
 import AppHeader from "../../components/AppHeader";
 import firebase from "../../services/firebase";
 import { AuthContext } from "../../contexts/auth";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function Verify() {
   const { user } = useContext(AuthContext);
   const [photo, setPhoto] = useState(null);
   const [transferred, setTransferred] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [faceListExists, setFaceListExists] = useState(false);
+  let faceListRef = firebase
+    .firestore()
+    .collection("verifyList")
+    .doc(user.username);
+
+  useEffect(() => {
+    faceListRef.onSnapshot((snapshot) => {
+      //trocar por .on ou .get
+      console.log(snapshot.data());
+      setFaceListExists(snapshot.data() ? true : false);
+    });
+  }, []);
 
   const openCamera = async () => {
     console.log("Abrindo câmera...");
@@ -42,6 +64,8 @@ function Verify() {
   };
 
   const uploadPhoto = async () => {
+    setSending(true);
+
     if (!photo) {
       console.log("No photo selected");
 
@@ -74,7 +98,7 @@ function Verify() {
           const percentage = (
             (snapshot.bytesTransferred / snapshot.totalBytes) *
             100
-          ).toFixed(2);
+          ).toFixed(0);
 
           console.log(`Enviando: ${percentage}%`);
           setTransferred(percentage);
@@ -86,10 +110,13 @@ function Verify() {
         async () => {
           await storageRef.getDownloadURL().then(async (downloadUrl) => {
             console.log("downloadUrl: " + downloadUrl);
-            await salvarDados(downloadUrl)
+            await salvarDados({
+              url: downloadUrl,
+              filename: `foto-${fileName}`,
+            });
           });
 
-          Alert.alert("Sucesso!", "Foto enviada.");
+          console.log("Sucesso!", "Foto enviada.");
 
           setPhoto(null);
         }
@@ -97,49 +124,101 @@ function Verify() {
     }
   };
 
-  const salvarDados = async (downloadUrl) => {
-    await firebase
-      .firestore()
-      .collection("faceList")
-      .doc(user.username)
-      .update({
-        facelist: firebase.firestore.FieldValue.arrayUnion(downloadUrl)
-      })
-      .then((value) => {
-        console.log(value)
-        Alert.alert("Sucesso", "Salvo!")
-      })
-      .catch((err) => {
-        Alert.alert("Erro", err.message)
-      });
-  }
+  const salvarDados = async (data) => {
+    if (faceListExists) {
+      await faceListRef
+        .update({
+          facelist: firebase.firestore.FieldValue.arrayUnion(data),
+        })
+        .then((value) => {
+          console.log(value);
+          console.log("Sucesso ao salvar no firestore");
+        })
+        .catch((err) => {
+          Alert.alert("Erro", err.message);
+        });
+    } else {
+      await faceListRef
+        .set({
+          facelist: [data],
+        })
+        .then((value) => {
+          console.log(value);
+          console.log("Sucesso ao salvar no firestore");
+        })
+        .catch((err) => {
+          Alert.alert("Erro", err.message);
+        });
+    }
+
+    setTimeout(() => {
+      setSending(false);
+    }, 3000);
+  };
 
   return (
     <>
       <AppHeader back />
       <View style={styles.container}>
-        <Text style={styles.text}>Verify Page</Text>
+        <Text style={styles.text}>Verificação Facial</Text>
 
-        <Text style={styles.text}>{photo ? photo.uri.substr(-40) : "no photo"}</Text>
+        <TouchableOpacity style={styles.photoContainer} onPress={openCamera}>
+          {photo ? (
+            <Image
+              style={styles.photo}
+              source={{
+                uri: photo.uri,
+              }}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="camera-plus-outline"
+              color={"#888"}
+              size={60}
+            />
+          )}
+        </TouchableOpacity>
 
-        <Image
-          style={styles.photo}
-          source={{
-            uri: photo
-              ? photo.uri
-              : "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png",
-          }}
-        />
+        <View style={styles.infoBox}>
+          {sending && (
+            <>
+              <View style={styles.loaderContainer}>
+                {transferred > 1 && (
+                  <View
+                    style={[
+                      styles.loaderContent,
+                      {
+                        backgroundColor:
+                          Number(transferred) === 100 ? "#77dd77" : "#f00",
+                        width: `${transferred}%`,
+                      },
+                    ]}
+                  />
+                )}
+              </View>
+              <Text
+                style={[
+                  styles.text,
+                  { color: Number(transferred) === 100 ? "#77dd77" : "#f00" },
+                ]}
+              >
+                {transferred}%
+              </Text>
+            </>
+          )}
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={openCamera}>
-          <Text style={styles.buttonText}>Tirar Foto</Text>
+          <Text style={styles.buttonText}>
+            {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
-          <Text style={styles.buttonText}>Enviar Foto</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.text}>{transferred}%</Text>
+        {photo && (
+          <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
+            <Text style={styles.buttonText}>Enviar Foto</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </>
   );
