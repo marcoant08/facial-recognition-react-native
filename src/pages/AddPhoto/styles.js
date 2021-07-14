@@ -15,15 +15,12 @@ const styles = StyleSheet.create({
 
     button: {
         backgroundColor: "#f00",
-        flexDirection: "row",
-        width: "94%",
+        width: "80%",
         height: 60,
         margin: 4,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
-        alignSelf: "center",
-        marginBottom: 70
     },
 
     buttonText: {
@@ -46,18 +43,20 @@ const styles = StyleSheet.create({
         width: "45%",
         height: 170,
         borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "#000",
         backgroundColor: "#ddd0d0d0",
         marginVertical: 10,
-        marginHorizontal: "2%"
+        marginHorizontal: 5
     },
 
     addPhotoButton: {
         width: "45%",
         height: 170,
         borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#ddd",
+        borderWidth: 1,
+        borderColor: "#000",
+        backgroundColor: "#ddd0d0d0",
         marginVertical: 10,
         marginHorizontal: 5
     },
