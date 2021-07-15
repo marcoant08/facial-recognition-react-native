@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { FIRESTORE_COLLECTION } from "@env";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./styles";
@@ -23,14 +24,14 @@ function MyPhotos() {
   const [photos, setPhotos] = useState([]);
   let faceListRef = firebase
     .firestore()
-    .collection("faceList")
+    .collection(FIRESTORE_COLLECTION)
     .doc(user.username);
 
   useEffect(() => {
     faceListRef.onSnapshot((snapshot) => {
       //trocar por .on ou .get
       console.log(snapshot.data());
-      setPhotos(snapshot.data() ? snapshot.data().facelist : []);
+      setPhotos(snapshot.data()?.facelist ? snapshot.data().facelist : []);
       setLoading(false);
     });
   }, []);

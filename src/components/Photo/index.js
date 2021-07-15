@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Alert, Image, TouchableOpacity, View } from "react-native";
+import { FIRESTORE_COLLECTION } from "@env";
 import styles from "./styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,7 +16,7 @@ function Photo({ manageable, data }) {
     .child(`user-${user.username}/base/${data.filename}`);
   let faceListRef = firebase
     .firestore()
-    .collection("faceList")
+    .collection(FIRESTORE_COLLECTION)
     .doc(user.username);
 
   const deletePhoto = () => {
@@ -25,7 +26,7 @@ function Photo({ manageable, data }) {
       [
         {
           text: "Cancelar",
-          onPress: () => {},
+          onPress: () => { },
           style: "cancel",
         },
         {

@@ -2,39 +2,32 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+// import { FIRESTORE_COLLECTION } from "@env";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
-import { v4 as uuidv4 } from "uuid";
 import styles from "./styles";
 import AppHeader from "../../components/AppHeader";
-import firebase from "../../services/firebase";
+import faceapi from "../../services/faceapi";
 import { AuthContext } from "../../contexts/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+// require('buffer').Buffer
 
 function Verify() {
   const { user } = useContext(AuthContext);
   const [photo, setPhoto] = useState(null);
-  const [transferred, setTransferred] = useState(0);
-  const [sending, setSending] = useState(false);
-  const [faceListExists, setFaceListExists] = useState(false);
-  let faceListRef = firebase
-    .firestore()
-    .collection("verifyList")
-    .doc(user.username);
 
-  useEffect(() => {
-    faceListRef.onSnapshot((snapshot) => {
-      //trocar por .on ou .get
-      console.log(snapshot.data());
-      setFaceListExists(snapshot.data() ? true : false);
-    });
-  }, []);
+  // useEffect(() => {
+  //   faceListRef.onSnapshot((snapshot) => {
+  //     //trocar por .on ou .get
+  //     console.log(snapshot.data());
+  //     setFaceListExists(snapshot.data() ? true : false);
+  //   });
+  // }, []);
 
   const openCamera = async () => {
     console.log("Abrindo câmera...");
@@ -63,98 +56,61 @@ function Verify() {
     setPhoto(data);
   };
 
-  const uploadPhoto = async () => {
-    setSending(true);
+  const getData = async () => {
+    return new Promise(async (resolve, reject) => {
+      try {
 
-    if (!photo) {
-      console.log("No photo selected");
+        // console.log("URI: ", photo.uri)
 
-      Alert.alert("Tire uma foto", "Nenhuma foto disponível para envio.");
+        // const response = await fetch(photo.uri);
+        // console.log(response)
 
-      return;
-    } else {
-      console.log("Sending photo...");
-      // setUploading(true);
-      setTransferred(0);
+        // const blob = await response.blob()
 
-      const fileExtension = photo.uri.split(".").pop();
-      console.log("EXT: " + fileExtension);
+        // console.log("blob", blob)
 
-      const uuid = uuidv4();
+        // resolve(blob)
+        var binaryDataInBase64 = new FormData();
+        binaryDataInBase64.append({
+          uri: Constants.platform.ios ? 'file://' + photo.uri : photo.uri,
+          name: photo.filename,
+          type: 'image/jpeg'
+        })
 
-      const fileName = `${uuid}.${fileExtension}`;
-      console.log("FILENAME: " + fileName);
+        console.log(binaryDataInBase64)
+        resolve(binaryDataInBase64)
 
-      const response = await fetch(photo.uri);
-      const blob = await response.blob();
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 
-      let storageRef = firebase
-        .storage()
-        .ref(`user-${user.username}/verify/foto-${fileName}`);
+  const verifyFace = async () => {
+    console.log("Verificandoo0...")
+    // const data = await fetch(photo.uri)//.then((value) => console.log("POK", value)).catch(() => console.log("AAA"));
 
-      storageRef.put(blob).on(
-        firebase.storage.TaskEvent.STATE_CHANGED,
-        (snapshot) => {
-          const percentage = (
-            (snapshot.bytesTransferred / snapshot.totalBytes) *
-            100
-          ).toFixed(0);
+    try {
+      const data = await getData()
 
-          console.log(`Enviando: ${percentage}%`);
-          setTransferred(percentage);
-        },
-        (error) => {
-          console.log("Erro:\n", error.message);
-          Alert.alert("Ocorreu um erro...", error.message);
-        },
-        async () => {
-          await storageRef.getDownloadURL().then(async (downloadUrl) => {
-            console.log("downloadUrl: " + downloadUrl);
-            await salvarDados({
-              url: downloadUrl,
-              filename: `foto-${fileName}`,
-            });
-          });
+      const detectResponse = await faceapi.post("face/v1.0/detect",
+        data,
+        {
+          params: {
+            detectionModel: "detection_03",
+            recognitionModel: "recognition_04"
+          },
+          headers: {
+            "Content-Type": "application/octet-stream"
+          }
+        })
 
-          console.log("Sucesso!", "Foto enviada.");
-
-          setPhoto(null);
-        }
-      );
+      console.log("detect", detectResponse.data)
+    } catch (e) {
+      console.log(e.response ? e.response.data : e.message)
+      Alert.alert("Erro", e.message)
     }
-  };
-
-  const salvarDados = async (data) => {
-    if (faceListExists) {
-      await faceListRef
-        .update({
-          facelist: firebase.firestore.FieldValue.arrayUnion(data),
-        })
-        .then((value) => {
-          console.log(value);
-          console.log("Sucesso ao salvar no firestore");
-        })
-        .catch((err) => {
-          Alert.alert("Erro", err.message);
-        });
-    } else {
-      await faceListRef
-        .set({
-          facelist: [data],
-        })
-        .then((value) => {
-          console.log(value);
-          console.log("Sucesso ao salvar no firestore");
-        })
-        .catch((err) => {
-          Alert.alert("Erro", err.message);
-        });
-    }
-
-    setTimeout(() => {
-      setSending(false);
-    }, 3000);
-  };
+  }
 
   return (
     <>
@@ -179,35 +135,6 @@ function Verify() {
           )}
         </TouchableOpacity>
 
-        <View style={styles.infoBox}>
-          {sending && (
-            <>
-              <View style={styles.loaderContainer}>
-                {transferred > 1 && (
-                  <View
-                    style={[
-                      styles.loaderContent,
-                      {
-                        backgroundColor:
-                          Number(transferred) === 100 ? "#77dd77" : "#f00",
-                        width: `${transferred}%`,
-                      },
-                    ]}
-                  />
-                )}
-              </View>
-              <Text
-                style={[
-                  styles.text,
-                  { color: Number(transferred) === 100 ? "#77dd77" : "#f00" },
-                ]}
-              >
-                {transferred}%
-              </Text>
-            </>
-          )}
-        </View>
-
         <TouchableOpacity style={styles.button} onPress={openCamera}>
           <Text style={styles.buttonText}>
             {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
@@ -215,8 +142,8 @@ function Verify() {
         </TouchableOpacity>
 
         {photo && (
-          <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
-            <Text style={styles.buttonText}>Enviar Foto</Text>
+          <TouchableOpacity style={styles.button} onPress={verifyFace}>
+            <Text style={styles.buttonText}>Verificar</Text>
           </TouchableOpacity>
         )}
       </View>

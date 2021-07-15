@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { FIRESTORE_COLLECTION } from "@env";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import styles from "./styles";
 import AppHeader from "../../components/AppHeader";
 import firebase from "../../services/firebase";
+import faceapi from "../../services/faceapi";
 import { AuthContext } from "../../contexts/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -26,7 +28,7 @@ function AddPhoto() {
   const [faceListLength, setFaceListLength] = useState(0);
   let faceListRef = firebase
     .firestore()
-    .collection("faceList")
+    .collection(FIRESTORE_COLLECTION)
     .doc(user.username);
 
   useEffect(() => {
@@ -94,6 +96,8 @@ function AddPhoto() {
       const response = await fetch(photo.uri);
       const blob = await response.blob();
 
+      console.log(blob)
+
       let storageRef = firebase
         .storage()
         .ref(`user-${user.username}/base/foto-${fileName}`);
@@ -116,14 +120,25 @@ function AddPhoto() {
         async () => {
           await storageRef.getDownloadURL().then(async (downloadUrl) => {
             console.log("downloadUrl: " + downloadUrl);
-            await salvarDados({
-              url: downloadUrl,
-              filename: `foto-${fileName}`,
-            });
+
+            try {
+              const addFaceResponse = await faceapi.post(`/face/v1.0/largepersongroups/general/persons/${user.personId}/persistedfaces`, {
+                url: downloadUrl,
+              })
+
+              console.log(addFaceResponse.data)
+
+              await salvarDados({
+                url: downloadUrl,
+                filename: `foto-${fileName}`,
+                persistedFaceId: addFaceResponse.data.persistedFaceId
+              });
+
+              console.log("Sucesso!", "Foto enviada.");
+            } catch (e) {
+              Alert.alert("Erro", e.message)
+            }
           });
-
-          console.log("Sucesso!", "Foto enviada.");
-
           setPhoto(null);
         }
       );
