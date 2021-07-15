@@ -1,5 +1,11 @@
 import React, { useContext, useState } from "react";
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { FIRESTORE_COLLECTION } from "@env";
 import styles from "./styles";
 import firebase from "../../services/firebase";
@@ -8,48 +14,47 @@ import { AuthContext } from "../../contexts/auth";
 
 function Login() {
   const { changeUser } = useContext(AuthContext);
-  const [validating, setValidating] = useState(false)
-  let faceListRef = firebase
-    .firestore()
-    .collection(FIRESTORE_COLLECTION)
+  const [validating, setValidating] = useState(false);
+  let faceListRef = firebase.firestore().collection(FIRESTORE_COLLECTION);
 
   const validation = async (user) => {
-    setValidating(true)
+    setValidating(true);
 
     await faceListRef
       .doc(user.username)
       .get()
-      .then(async value => {
-        console.log("DOCUMENT", value.data())
+      .then(async (value) => {
+        console.log("DOCUMENT", value.data());
 
         if (!value.data()?.personId) {
-          await createPerson(user)
-            .then(personId => {
-              changeUser({ ...user, personId })
-            })
+          await createPerson(user).then((personId) => {
+            changeUser({ ...user, personId });
+          });
         } else {
-          changeUser({ ...user, personId: value.data().personId })
+          changeUser({ ...user, personId: value.data().personId });
         }
       })
-      .catch(err => {
-        console.log("ERR", err)
-        Alert.alert("Erro", err.message)
-      })
+      .catch((err) => {
+        console.log("ERR", err);
+        Alert.alert("Erro", err.message);
+      });
 
-    setValidating(false)
-
-  }
+    setValidating(false);
+  };
 
   const createPerson = async (user) => {
-    console.log("CRIANDO PERSON...")
+    console.log("CRIANDO PERSON...");
     return new Promise(async (resolve, reject) => {
       try {
-        const createPersonResponse = await faceapi.post("face/v1.0/largepersongroups/general/persons", {
-          name: user.username,
-          userData: user.email
-        })
+        const createPersonResponse = await faceapi.post(
+          "face/v1.0/largepersongroups/general/persons",
+          {
+            name: user.username,
+            userData: user.email,
+          }
+        );
 
-        console.log(createPersonResponse.data)
+        console.log(createPersonResponse.data);
 
         await faceListRef
           .doc(user.username)
@@ -62,15 +67,15 @@ function Login() {
             console.log("Sucesso ao salvar personId no firestore");
           })
           .catch((err) => {
-            console.log("Erro", err.message);
+            throw err;
           });
 
-        resolve(createPersonResponse.data.personId)
+        resolve(createPersonResponse.data.personId);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
-  }
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -86,7 +91,17 @@ function Login() {
         }}
       >
         <Text style={styles.buttonText}>Marco Antônio</Text>
-        {validating && <ActivityIndicator style={{ position: "absolute", alignSelf: "flex-end", paddingRight: 25 }} size="small" color="#fff" />}
+        {validating && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              alignSelf: "flex-end",
+              paddingRight: 25,
+            }}
+            size="small"
+            color="#fff"
+          />
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -100,7 +115,17 @@ function Login() {
         }}
       >
         <Text style={styles.buttonText}>Neymar Jr</Text>
-        {validating && <ActivityIndicator style={{ position: "absolute", alignSelf: "flex-end", paddingRight: 25 }} size="small" color="#fff" />}
+        {validating && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              alignSelf: "flex-end",
+              paddingRight: 25,
+            }}
+            size="small"
+            color="#fff"
+          />
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -114,7 +139,17 @@ function Login() {
         }}
       >
         <Text style={styles.buttonText}>Alzira</Text>
-        {validating && <ActivityIndicator style={{ position: "absolute", alignSelf: "flex-end", paddingRight: 25 }} size="small" color="#fff" />}
+        {validating && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              alignSelf: "flex-end",
+              paddingRight: 25,
+            }}
+            size="small"
+            color="#fff"
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
