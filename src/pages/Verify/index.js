@@ -70,7 +70,7 @@ function Verify() {
         // console.log("blob", blob)
 
         // resolve(blob)
-        var binaryDataInBase64 = new FormData();
+        var binaryDataInBase64 = new FormData();// TENTAR SUBSTITUIR FETCH POR AXIOS
         binaryDataInBase64.append({
           uri: Constants.platform.ios ? 'file://' + photo.uri : photo.uri,
           name: photo.filename,
