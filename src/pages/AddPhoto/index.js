@@ -100,7 +100,7 @@ function AddPhoto() {
 
       let storageRef = firebase
         .storage()
-        .ref(`user-${user.username}/base/foto-${fileName}`);
+        .ref(`user-${user.username}/foto-${fileName}`);
 
       storageRef.put(blob).on(
         firebase.storage.TaskEvent.STATE_CHANGED,

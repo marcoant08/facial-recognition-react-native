@@ -50,24 +50,12 @@ function Verify() {
     setPhoto(data);
   };
 
-  const getBufferFromImage = async () => {
-    return new Promise((resolve, reject) => {
-      try {
-        const buff = new Buffer.from(photo.base64, "base64");
-
-        resolve(buff);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
   const verifyFace = async () => {
     console.log("Verificando...");
     setChecking(true);
 
     try {
-      const data = await getBufferFromImage();
+      const data = new Buffer.from(photo.base64, "base64");
 
       const detectResponse = await faceapi.post("face/v1.0/detect", data, {
         params: {
