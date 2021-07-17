@@ -96,7 +96,7 @@ function AddPhoto() {
       const response = await fetch(photo.uri);
       const blob = await response.blob();
 
-      console.log(blob)
+      console.log(blob);
 
       let storageRef = firebase
         .storage()
@@ -122,21 +122,41 @@ function AddPhoto() {
             console.log("downloadUrl: " + downloadUrl);
 
             try {
-              const addFaceResponse = await faceapi.post(`/face/v1.0/largepersongroups/general/persons/${user.personId}/persistedfaces`, {
-                url: downloadUrl,
-              })
+              const addFaceResponse = await faceapi.post(
+                `/face/v1.0/largepersongroups/general/persons/${user.personId}/persistedfaces`,
+                {
+                  url: downloadUrl,
+                }
+              );
 
-              console.log(addFaceResponse.data)
+              console.log(addFaceResponse.data);
 
               await salvarDados({
                 url: downloadUrl,
                 filename: `foto-${fileName}`,
-                persistedFaceId: addFaceResponse.data.persistedFaceId
+                persistedFaceId: addFaceResponse.data.persistedFaceId,
               });
 
               console.log("Sucesso!", "Foto enviada.");
             } catch (e) {
-              Alert.alert("Erro", e.message)
+              console.log("DATA ERROR", e.response.data ? e.response.data : e);
+              Alert.alert(
+                "Erro",
+                e.response ? e.response.data.error.message : e.message
+              );
+
+              storageRef
+                .delete()
+                .then(() => {
+                  console.log("File deleted");
+                })
+                .catch(() => {
+                  console.log("File not deleted");
+                });
+
+              setTimeout(() => {
+                setSending(false);
+              }, 3000);
             }
           });
           setPhoto(null);
@@ -151,8 +171,7 @@ function AddPhoto() {
         .update({
           facelist: firebase.firestore.FieldValue.arrayUnion(data),
         })
-        .then((value) => {
-          console.log(value);
+        .then(() => {
           console.log("Sucesso ao salvar no firestore");
         })
         .catch((err) => {
