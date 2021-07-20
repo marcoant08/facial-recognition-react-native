@@ -200,9 +200,11 @@ function AddPhoto() {
     <>
       <AppHeader back />
       <View style={styles.container}>
-        <Text style={styles.text}>
-          Adicione novas fotos à sua base de dados
-        </Text>
+        <View style={styles.pageHeader}>
+          <Text style={styles.text}>
+            Adicione novas fotos à sua base de dados
+          </Text>
+        </View>
 
         {faceListLength >= 6 && (
           <Text style={styles.text}>
@@ -210,63 +212,72 @@ function AddPhoto() {
           </Text>
         )}
 
-        <TouchableOpacity style={styles.photoContainer} onPress={openCamera}>
-          {photo ? (
-            <Image
-              style={styles.photo}
-              source={{
-                uri: photo.uri,
-              }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="camera-plus-outline"
-              color={"#888"}
-              size={60}
-            />
-          )}
-        </TouchableOpacity>
+        <View style={styles.pageContent}>
+          <TouchableOpacity style={styles.photoContainer} onPress={openCamera}>
+            {photo ? (
+              <Image
+                style={styles.photo}
+                source={{
+                  uri: photo.uri,
+                }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="camera-plus-outline"
+                color={"#888"}
+                size={60}
+              />
+            )}
+          </TouchableOpacity>
 
-        <View style={styles.infoBox}>
-          {sending && (
-            <>
-              <View style={styles.loaderContainer}>
-                {transferred > 1 && (
-                  <View
-                    style={[
-                      styles.loaderContent,
-                      {
-                        backgroundColor:
-                          Number(transferred) === 100 ? "#77dd77" : "#f00",
-                        width: `${transferred}%`,
-                      },
-                    ]}
-                  />
-                )}
-              </View>
-              <Text
-                style={[
-                  styles.text,
-                  { color: Number(transferred) === 100 ? "#77dd77" : "#f00" },
-                ]}
-              >
-                {transferred}%
-              </Text>
-            </>
-          )}
+          <View style={styles.infoBox}>
+            {sending && (
+              <>
+                <View style={styles.loaderContainer}>
+                  {transferred > 1 && (
+                    <View
+                      style={[
+                        styles.loaderContent,
+                        {
+                          backgroundColor:
+                            Number(transferred) === 100 ? "#77dd77" : "#f00",
+                          width: `${transferred}%`,
+                        },
+                      ]}
+                    />
+                  )}
+                </View>
+                <Text
+                  style={[
+                    styles.text,
+                    { color: Number(transferred) === 100 ? "#77dd77" : "#f00" },
+                  ]}
+                >
+                  {transferred}%
+                </Text>
+              </>
+            )}
+          </View>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={openCamera}>
-          <Text style={styles.buttonText}>
-            {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.pageFooter}>
+          <TouchableOpacity style={styles.button} onPress={openCamera}>
+            <Text style={styles.buttonText}>
+              {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
+            </Text>
+          </TouchableOpacity>
 
-        {photo && (
-          <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: photo ? "#f00" : "#aaa" },
+            ]}
+            onPress={uploadPhoto}
+            disabled={!photo}
+          >
             <Text style={styles.buttonText}>Enviar Foto</Text>
           </TouchableOpacity>
-        )}
+        </View>
       </View>
     </>
   );

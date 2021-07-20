@@ -7,6 +7,25 @@ const styles = StyleSheet.create({
     // justifyContent: "space-evenly",
   },
 
+  pageHeader: {
+    paddingTop: 15,
+    alignItems: "center",
+  },
+
+  pageContent: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  pageFooter: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingBottom: 70,
+  },
+
   text: {
     color: "#f00",
     fontSize: 20,
@@ -32,7 +51,7 @@ const styles = StyleSheet.create({
 
   photoContainer: {
     width: "85%",
-    height: 300,
+    height: 350,
     borderRadius: 15,
     backgroundColor: "#ddd",
     justifyContent: "center",

@@ -108,33 +108,44 @@ function Verify() {
     <>
       <AppHeader back />
       <View style={styles.container}>
-        <Text style={styles.text}>Verificação Facial</Text>
+        <View style={styles.pageHeader}>
+          <Text style={styles.text}>Verificação Facial</Text>
+        </View>
 
-        <TouchableOpacity style={styles.photoContainer} onPress={openCamera}>
-          {photo ? (
-            <Image
-              style={styles.photo}
-              source={{
-                uri: photo.uri,
-              }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="camera-plus-outline"
-              color={"#888"}
-              size={60}
-            />
-          )}
-        </TouchableOpacity>
+        <View style={styles.pageContent}>
+          <TouchableOpacity style={styles.photoContainer} onPress={openCamera}>
+            {photo ? (
+              <Image
+                style={styles.photo}
+                source={{
+                  uri: photo.uri,
+                }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="camera-plus-outline"
+                color={"#888"}
+                size={60}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.button} onPress={openCamera}>
-          <Text style={styles.buttonText}>
-            {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.pageFooter}>
+          <TouchableOpacity style={styles.button} onPress={openCamera}>
+            <Text style={styles.buttonText}>
+              {!photo ? "Tirar Foto" : "Tirar Outra Foto"}
+            </Text>
+          </TouchableOpacity>
 
-        {photo && (
-          <TouchableOpacity style={styles.button} onPress={verifyFace}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: photo ? "#f00" : "#aaa" },
+            ]}
+            onPress={verifyFace}
+            disabled={!photo}
+          >
             <Text style={styles.buttonText}>Verificar</Text>
             {checking && (
               <ActivityIndicator
@@ -148,7 +159,7 @@ function Verify() {
               />
             )}
           </TouchableOpacity>
-        )}
+        </View>
       </View>
     </>
   );
