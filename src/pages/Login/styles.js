@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   text: {
     color: "#f00",
     fontWeight: "bold",
-    marginBottom: 30
+    marginBottom: 30,
   },
 
   button: {
@@ -20,14 +20,14 @@ const styles = StyleSheet.create({
     margin: 4,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 
   buttonText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#fff"
-  }
+    color: "#fff",
+  },
 });
 
 export default styles;

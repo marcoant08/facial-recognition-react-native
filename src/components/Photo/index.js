@@ -13,7 +13,7 @@ function Photo({ manageable, data }) {
   let storageRef = firebase
     .storage()
     .ref()
-    .child(`user-${user.username}/${data.filename}`);
+    .child(`user-${user.username}/base/${data.filename}`);
   let faceListRef = firebase
     .firestore()
     .collection(FIRESTORE_COLLECTION)
@@ -26,7 +26,7 @@ function Photo({ manageable, data }) {
       [
         {
           text: "Cancelar",
-          onPress: () => { },
+          onPress: () => {},
           style: "cancel",
         },
         {

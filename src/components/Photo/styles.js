@@ -23,16 +23,11 @@ const styles = StyleSheet.create({
     borderColor: "#B12D19",
     borderRadius: 50,
     backgroundColor: "rgba(255, 255, 255, 0.7)",
-    // marginTop: -200,
-    // justifyContent: "center",
-    // alignItems: "center",
     position: "absolute",
   },
 
   deleteIcon: {
     margin: 10,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
 });
 

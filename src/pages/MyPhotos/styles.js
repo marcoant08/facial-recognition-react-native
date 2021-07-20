@@ -34,8 +34,6 @@ const styles = StyleSheet.create({
   },
 
   photosContainer: {
-    // display: "flex",
-    // position: "absolute",
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",

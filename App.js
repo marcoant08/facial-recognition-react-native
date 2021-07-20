@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import Routes from "./src/routes";
 
 console.ignoredYellowBox = ["Warning: Each", "Warning: Failed"];
+console.disableYellowBox = true;
 
 export default function App() {
   return (

@@ -1,12 +1,16 @@
 import React from "react";
 import { Text, View } from "react-native";
 import styles from "./styles";
+import AppHeader from "../../components/AppHeader";
 
 function Model() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Model Page</Text>
-    </View>
+    <>
+      <AppHeader />
+      <View style={styles.container}>
+        <Text style={styles.text}>Model Page</Text>
+      </View>
+    </>
   );
 }
 
