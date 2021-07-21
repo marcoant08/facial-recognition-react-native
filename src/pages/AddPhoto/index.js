@@ -270,12 +270,16 @@ function AddPhoto() {
           <TouchableOpacity
             style={[
               styles.button,
-              { backgroundColor: photo ? "#f00" : "#aaa" },
+              { backgroundColor: photo ? "#f00" : "#ccc" },
             ]}
             onPress={uploadPhoto}
             disabled={!photo}
           >
-            <Text style={styles.buttonText}>Enviar Foto</Text>
+            <Text
+              style={[styles.buttonText, { color: photo ? "#fff" : "#aaa" }]}
+            >
+              Enviar Foto
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -141,12 +141,16 @@ function Verify() {
           <TouchableOpacity
             style={[
               styles.button,
-              { backgroundColor: photo ? "#f00" : "#aaa" },
+              { backgroundColor: photo ? "#f00" : "#ccc" },
             ]}
             onPress={verifyFace}
             disabled={!photo}
           >
-            <Text style={styles.buttonText}>Verificar</Text>
+            <Text
+              style={[styles.buttonText, { color: photo ? "#fff" : "#aaa" }]}
+            >
+              Verificar
+            </Text>
             {checking && (
               <ActivityIndicator
                 style={{
