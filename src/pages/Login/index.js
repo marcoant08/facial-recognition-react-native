@@ -3,9 +3,11 @@ import {
   ActivityIndicator,
   Alert,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import { FIRESTORE_COLLECTION } from "@env";
 import styles from "./styles";
 import firebase from "../../services/firebase";
@@ -15,6 +17,9 @@ import { AuthContext } from "../../contexts/auth";
 function Login() {
   const { changeUser } = useContext(AuthContext);
   const [validating, setValidating] = useState(false);
+  const [account, setAccount] = useState("uema");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   let faceListRef = firebase.firestore().collection(FIRESTORE_COLLECTION);
 
   const validation = async (user) => {
@@ -80,8 +85,70 @@ function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Login Page</Text>
+
+      <Picker
+        selectedValue={account}
+        style={styles.picker}
+        onValueChange={setAccount}
+      >
+        <Picker.Item label="UEMA" value="uema" />
+        <Picker.Item label="Outlook" value="outlook" />
+        <Picker.Item label="Yahoo!" value="yahoo" />
+      </Picker>
+
+      <TextInput
+        style={styles.input}
+        onChange={setUsername}
+        value={username}
+        placeholder="Username"
+      />
+
+      <TextInput
+        style={styles.input}
+        onChange={setPassword}
+        value={password}
+        placeholder="Password"
+        secureTextEntry
+      />
+
       <TouchableOpacity
         style={styles.button}
+        onPress={() => { }}
+      >
+        <Text style={styles.buttonText}>Entrar</Text>
+        {validating && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              alignSelf: "flex-end",
+              paddingRight: 25,
+            }}
+            size="small"
+            color="#fff"
+          />
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.buttonRegister}
+        onPress={() => { }}
+      >
+        <Text style={styles.buttonRegisterText}>Criar conta</Text>
+        {validating && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              alignSelf: "flex-end",
+              paddingRight: 25,
+            }}
+            size="small"
+            color="#fff"
+          />
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.buttonRegister}
         onPress={() => {
           validation({
             name: "Marco Antônio",
@@ -90,7 +157,7 @@ function Login() {
           });
         }}
       >
-        <Text style={styles.buttonText}>Marco Antônio</Text>
+        <Text style={styles.buttonRegisterText}>Marco Antônio</Text>
         {validating && (
           <ActivityIndicator
             style={{
@@ -105,7 +172,7 @@ function Login() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.buttonRegister}
         onPress={() => {
           validation({
             name: "Neymar Jr",
@@ -114,7 +181,7 @@ function Login() {
           });
         }}
       >
-        <Text style={styles.buttonText}>Neymar Jr</Text>
+        <Text style={styles.buttonRegisterText}>Neymar Jr</Text>
         {validating && (
           <ActivityIndicator
             style={{
@@ -129,7 +196,7 @@ function Login() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.buttonRegister}
         onPress={() => {
           validation({
             name: "Alzira",
@@ -138,7 +205,7 @@ function Login() {
           });
         }}
       >
-        <Text style={styles.buttonText}>Alzira</Text>
+        <Text style={styles.buttonRegisterText}>Alzira</Text>
         {validating && (
           <ActivityIndicator
             style={{
