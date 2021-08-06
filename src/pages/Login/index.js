@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
 import { FIRESTORE_COLLECTION } from "@env";
 import styles from "./styles";
 import firebase from "../../services/firebase";
@@ -20,7 +20,14 @@ function Login() {
   const [account, setAccount] = useState("uema");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const unmounted = useRef(false);
   let faceListRef = firebase.firestore().collection(FIRESTORE_COLLECTION);
+
+  useEffect(() => {
+    return () => {
+      unmounted.current = true;
+    };
+  }, []);
 
   const validation = async (user) => {
     setValidating(true);
@@ -44,7 +51,7 @@ function Login() {
         Alert.alert("Erro", err.message);
       });
 
-    setValidating(false);
+    if (!unmounted.current) setValidating(false);
   };
 
   const createPerson = async (user) => {
@@ -111,10 +118,7 @@ function Login() {
         secureTextEntry
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => { }}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => {}}>
         <Text style={styles.buttonText}>Entrar</Text>
         {validating && (
           <ActivityIndicator
@@ -129,10 +133,7 @@ function Login() {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.buttonRegister}
-        onPress={() => { }}
-      >
+      <TouchableOpacity style={styles.buttonRegister} onPress={() => {}}>
         <Text style={styles.buttonRegisterText}>Criar conta</Text>
         {validating && (
           <ActivityIndicator
