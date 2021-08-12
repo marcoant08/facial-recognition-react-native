@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -7,43 +7,36 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import styles from "./styles";
 import auth from "../../services/auth";
 import { AuthContext } from "../../contexts/auth";
-import { useNavigation } from "@react-navigation/native";
 
-function Login() {
+function Register() {
   const { validation, validating } = useContext(AuthContext);
-  const [account, setAccount] = useState("uema");
+  //   const [account, setAccount] = useState("uema");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const unmounted = useRef(false);
-  const navigation = useNavigation();
 
-  useEffect(() => {
-    return () => {
-      unmounted.current = true;
-    };
-  }, []);
-
-  const authenticate = async () => {
+  const createAccount = async () => {
     await auth
-      .post("/auth/login", { username, password })
+      .post("/auth/register", {
+        username,
+        password,
+        roles: ["ROLE_USER", "ROLE_ADMIN"],
+      })
       .then((response) => {
-        console.log(response);
         const { user, username, id } = response.data;
         validation({ user, username, id });
       })
       .catch((err) => {
-        console.log(err.response ? err.response : err);
+        console.log(err.response ? err.response.data : err);
         Alert.alert("Error", err.message);
       });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Login Page</Text>
+      <Text style={styles.text}>Register Page</Text>
 
       {/* <Picker
         selectedValue={account}
@@ -70,28 +63,8 @@ function Login() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={authenticate}>
-        <Text style={styles.buttonText}>Entrar</Text>
-        {validating && (
-          <ActivityIndicator
-            style={{
-              position: "absolute",
-              alignSelf: "flex-end",
-              paddingRight: 25,
-            }}
-            size="small"
-            color="#fff"
-          />
-        )}
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.buttonRegister}
-        onPress={() => {
-          navigation.push("Register");
-        }}
-      >
-        <Text style={styles.buttonRegisterText}>Criar conta</Text>
+      <TouchableOpacity style={styles.button} onPress={createAccount}>
+        <Text style={styles.buttonText}>Criar</Text>
         {validating && (
           <ActivityIndicator
             style={{
@@ -108,4 +81,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
