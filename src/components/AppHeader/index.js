@@ -7,7 +7,7 @@ import { AuthContext } from "../../contexts/auth";
 import styles from "./styles";
 
 function MyHeader({ back }) {
-  const { changeUser, user } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
   const navigation = useNavigation();
 
   const exit = () => {
@@ -24,7 +24,7 @@ function MyHeader({ back }) {
           text: "Desconectar",
           onPress: () => {
             Alert.alert("Pronto!", "Você foi desconectado.");
-            changeUser(null);
+            logout(null);
           },
         },
       ],

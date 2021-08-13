@@ -28,12 +28,13 @@ function Login() {
   }, []);
 
   const authenticate = async () => {
+    console.log("authenticate()");
     await auth
       .post("/auth/login", { username, password })
       .then((response) => {
-        console.log(response);
-        const { user, username, id } = response.data;
-        validation({ user, username, id });
+        console.log(response.data);
+        const { username, id } = response.data;
+        validation({ name: username, username, id });
       })
       .catch((err) => {
         console.log(err.response ? err.response : err);

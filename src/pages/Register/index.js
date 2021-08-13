@@ -25,8 +25,9 @@ function Register() {
         roles: ["ROLE_USER", "ROLE_ADMIN"],
       })
       .then((response) => {
-        const { user, username, id } = response.data;
-        validation({ user, username, id });
+        console.log(response.data);
+        const { username, id } = response.data;
+        validation({ name: username, username, id });
       })
       .catch((err) => {
         console.log(err.response ? err.response.data : err);

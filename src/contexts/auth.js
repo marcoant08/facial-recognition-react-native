@@ -1,5 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import { Alert } from "react-native";
+import { FIRESTORE_COLLECTION } from "@env";
+import firebase from "../services/firebase";
+import faceapi from "../services/faceapi";
 
 export const AuthContext = createContext({});
 
@@ -7,16 +10,11 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(false);
+  let faceListRef = firebase.firestore().collection(FIRESTORE_COLLECTION);
 
   useEffect(() => {
     setLoading(false);
   }, []);
-
-  const changeUser = async (user) => {
-    console.log("NEW USER:\n", user);
-
-    setUser(user);
-  };
 
   const validation = async (user) => {
     if (!user.username || !user.name || !user.id) {
@@ -34,10 +32,10 @@ const AuthProvider = ({ children }) => {
 
         if (!value.data()?.personId) {
           await createPerson(user).then((personId) => {
-            changeUser({ ...user, personId });
+            setUser({ ...user, personId });
           });
         } else {
-          changeUser({ ...user, personId: value.data().personId });
+          setUser({ ...user, personId: value.data().personId });
         }
       })
       .catch((err) => {
@@ -45,7 +43,7 @@ const AuthProvider = ({ children }) => {
         Alert.alert("Erro", err.message);
       });
 
-    if (!unmounted.current) setValidating(false);
+    setValidating(false);
   };
 
   const createPerson = async (user) => {
@@ -83,6 +81,10 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const logout = () => {
+    setUser(null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -91,7 +93,7 @@ const AuthProvider = ({ children }) => {
         user,
         validation,
         validating,
-        changeUser,
+        logout,
       }}
     >
       {children}
